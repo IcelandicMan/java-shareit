@@ -78,7 +78,7 @@ public class InMemoryItemStorage implements ItemStorage {
         Item item = null;
         for (Long userId : userItemsMap.keySet()) {
             for (Long id : userItemsMap.get(userId).keySet()) {
-                if (id == itemId) {
+                if (id.equals(itemId)) {
                     item = userItemsMap.get(userId).get(id);
                 }
             }
