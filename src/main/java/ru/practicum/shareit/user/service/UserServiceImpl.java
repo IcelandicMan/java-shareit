@@ -46,7 +46,8 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(Long userId, UserDto updatedUser) {
         userStorage.getUser(userId);
         User user = userMapper.map(updatedUser, User.class);
-        userStorage.updateUser(userId, user);
+        user.setId(userId);
+        userStorage.updateUser(user);
         return getUser(userId);
     }
 

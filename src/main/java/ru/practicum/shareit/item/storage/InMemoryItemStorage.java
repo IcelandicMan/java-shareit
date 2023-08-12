@@ -6,83 +6,72 @@ import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
 public class InMemoryItemStorage implements ItemStorage {
 
-    //Храним <userId <itemId,Item>>
-    private final Map<Long, Map<Long, Item>> userItemsMap = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, List<Item>> userItemIndex = new HashMap<>();
     private Long idCounter = 0L;
 
     @Override
-    public Item createItem(Long userId, Item item) {
-        log.info("Создаем вещь от пользователя под id {}: {}", item, userId);
+    public Item createItem(Item item) {
+        log.info("Создаем вещь от пользователя под id {}: {}", item, item.getOwnerId());
+        Long ownerId = item.getOwnerId();
         item.setId(++idCounter);
-        item.setOwnerId(userId);
-        if (!userItemsMap.containsKey(userId)) {
-            userItemsMap.put(userId, new HashMap<>());
-        }
-        Map<Long, Item> userItems = userItemsMap.get(userId);
-        userItems.put(item.getId(), item);
-        log.info("Вещь от пользователя под id {} создана: {}", userId, item);
+        items.put(item.getId(), item);
+        userItemIndex.computeIfAbsent(ownerId, k -> new ArrayList<>()).add(item);
+        log.info("Вещь от пользователя под id {} создана: {}", ownerId, item);
         return item;
     }
 
     @Override
-    public Item updateItem(Long userId, Long itemId, Item updatedItem) {
-        log.info("Обновление вещи под id {}", itemId);
-        Map<Long, Item> userItems = userItemsMap.get(userId);
+    public Item updateItem(Item updatedItem) {
+        log.info("Обновление вещи под id {}", updatedItem.getId());
+        final Long itemId = updatedItem.getId();
+        final Long userId = updatedItem.getOwnerId();
+
+        List<Item> userItems = userItemIndex.get(userId);
         if (userItems == null) {
+            log.error("Вещь под id {} принадлежит другому пользователю", updatedItem.getId());
+            throw new ItemNotFoundException(String.format("Вещь под id %s принадлежит другому пользователю", itemId));
+        }
+
+        Item itemToUpdate = items.get(itemId);
+        if (itemToUpdate == null || !userItems.contains(itemToUpdate)) {
             log.error("Вещь под id {} принадлежит другому пользователю", itemId);
             throw new ItemNotFoundException(String.format("Вещь под id %s принадлежит другому пользователю", itemId));
         }
 
-        final Item item = userItems.get(itemId);
-        if (item == null) {
-            log.error("Вещь под id {} принадлежит другому пользователю", itemId);
-            throw new ItemNotFoundException(String.format("Вещь под id %s принадлежит другому пользователю", itemId));
+        if (updatedItem.getName() != null) {
+            itemToUpdate.setName(updatedItem.getName());
+        }
+        if (updatedItem.getDescription() != null) {
+            itemToUpdate.setDescription(updatedItem.getDescription());
+        }
+        if (updatedItem.getAvailable() != null) {
+            itemToUpdate.setAvailable(updatedItem.getAvailable());
         }
 
-        final String updatedName = updatedItem.getName();
-        final String updatedDescription = updatedItem.getDescription();
-        final Boolean updatedStatus = updatedItem.getAvailable();
-        if (updatedName != null) {
-            item.setName(updatedName);
+        for (int i = 0; i < userItems.size(); i++) {
+            if (userItems.get(i).getId().equals(itemId)) {
+                userItems.set(i, itemToUpdate);
+                break;
+            }
         }
-        if (updatedDescription != null) {
-            item.setDescription(updatedDescription);
-        }
-        if (updatedStatus != null) {
-            item.setAvailable(updatedStatus);
-        }
-        log.info("Вещь под id {} обновлена: {} ", updatedItem.getId(), updatedItem);
-        return item;
+
+        log.info("Вещь под id {} обновлена: {} ", itemId, updatedItem);
+        return itemToUpdate;
     }
 
-    @Override
-    public void deleteItem(Long userId, Long itemId) {
-        log.info("Удаляем вещь c {} от пользователя под id {}", itemId, userId);
-        Map<Long, Item> userItems = userItemsMap.get(userId);
-        userItems.remove(itemId);
-        log.info("Вещь от пользователя под id {} удалена", userId);
-    }
 
     @Override
     public Item getItem(Long itemId) {
         log.info("Получение вещи под id {}", itemId);
         Item item = null;
-        for (Long userId : userItemsMap.keySet()) {
-            for (Long id : userItemsMap.get(userId).keySet()) {
-                if (id.equals(itemId)) {
-                    item = userItemsMap.get(userId).get(id);
-                }
-            }
-        }
+        item = items.get(itemId);
         if (item == null) {
             log.error("Вещь под id {} не найдена", itemId);
             throw new ItemNotFoundException(String.format("Вещь под id %s не найдена",
@@ -95,16 +84,26 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public List<Item> getItems(Long userId) {
         log.info("Получение Всех вещей пользователя с id {}", userId);
-        List<Item> userItemsList = new ArrayList<>();
+        List<Item> allItems = new ArrayList<>();
         if (userId != null) {
-            Map<Long, Item> userItems = userItemsMap.get(userId);
-            userItemsList.addAll(userItems.values());
-        } else {
-            for (Map<Long, Item> userItems : userItemsMap.values()) {
-                userItemsList.addAll(userItems.values());
-            }
+            return userItemIndex.get(userId);
+        }
+        for (List<Item> userItems : userItemIndex.values()) {
+            allItems.addAll(userItems);
+
         }
         log.info("Вещи пользователя с id {} получены", userId);
-        return userItemsList;
+        return allItems;
+    }
+
+    @Override
+    public void deleteItem(Long userId, Long itemId) {
+        log.info("Удаляем вещь c {} от пользователя под id {}", itemId, userId);
+        List<Item> userItems = userItemIndex.get(userId);
+        if (userItems != null) {
+            userItems.removeIf(item -> item.getId().equals(itemId));
+            items.remove(itemId);
+            log.info("Вещь от пользователя под id {} удалена", userId);
+        }
     }
 }

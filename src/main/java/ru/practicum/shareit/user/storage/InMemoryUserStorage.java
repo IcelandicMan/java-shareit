@@ -7,43 +7,49 @@ import ru.practicum.shareit.user.exception.EmailIsUsedException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
+    private final Set<String> emailUniqSet = new HashSet<>();
     private final Map<Long, User> users = new HashMap<>();
     private Long idCounter = 0L;
 
     @Override
     public User createUser(User user) {
         log.info("Создание пользователя: {}", user);
-        isEmailUsed(user);
+        final String email = user.getEmail();
+        if (emailUniqSet.contains(email)) {
+            throw new EmailIsUsedException(String.format("Пользователь c email %s уже существует", user.getEmail()));
+        }
         user.setId(++idCounter);
         user.setRegistryDate(LocalDate.now());
+        emailUniqSet.add(email);
         users.put(user.getId(), user);
         log.info("Пользователь под id {} создан: {}", user.getId(), user);
         return user;
     }
 
     @Override
-    public User updateUser(Long userId, User updatedUser) {
-        log.info("Обновление пользователя под id {}", userId);
-        final User user = getUser(userId);
-        final String updatedName = updatedUser.getName();
+    public User updateUser(User updatedUser) {
+        log.info("Обновление пользователя под id {}", updatedUser.getId());
+        final Long userId = updatedUser.getId();
         final String email = updatedUser.getEmail();
+        final String updatedName = updatedUser.getName();
+        User user = getUser(userId);
+        if (email != null && !email.equalsIgnoreCase(user.getEmail())) {
+            if (emailUniqSet.contains(email)) {
+                throw new EmailIsUsedException(String.format("Пользователь c email %s уже существует",
+                        updatedUser.getEmail()));
+            }
+            emailUniqSet.remove(user.getEmail());
+            emailUniqSet.add(email);
+            user.setEmail(email);
+        }
         if (updatedName != null) {
             user.setName(updatedName);
-        }
-        if (email != null && email.equalsIgnoreCase(user.getEmail())) {
-            // Ничего не делаем, потому что адрес электронной почты остался неизменным
-        } else if (email != null) {
-            isEmailUsed(updatedUser);
-            user.setEmail(email);
         }
         log.info("Пользователь под id {} обновлен: {} ", updatedUser.getId(), user);
         return user;
@@ -52,6 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(Long id) {
         log.info("Удаление пользователя с id {}", id);
+        emailUniqSet.remove(getUser(id).getEmail());
         users.remove(id);
         log.info("Пользователь с id {} удален", id);
     }
@@ -74,16 +81,5 @@ public class InMemoryUserStorage implements UserStorage {
         List<User> usersList = new ArrayList<>(users.values());
         log.info("Список всех пользователей получен");
         return usersList;
-    }
-
-    private void isEmailUsed(User user) {
-        for (User u : users.values()) {
-            if (u.equals(user)) {
-                continue;
-            }
-            if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
-                throw new EmailIsUsedException(String.format("Пользователь c email %s уже существует", user.getEmail()));
-            }
-        }
     }
 }

@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,8 @@ public class ItemServiceImpl implements ItemSerVice {
     public ItemDto createItem(Long userId, @Valid ItemDto item) {
         userStorage.getUser(userId);
         Item createdItem = itemMapper.map(item, Item.class);
-        createdItem = itemStorage.createItem(userId, createdItem);
+        createdItem.setOwnerId(userId);
+        createdItem = itemStorage.createItem(createdItem);
         return getItem(createdItem.getId());
     }
 
@@ -51,7 +53,9 @@ public class ItemServiceImpl implements ItemSerVice {
     public ItemDto updateItem(Long userId, Long itemId, ItemDto updatedItem) {
         userStorage.getUser(userId); // сразу прекращаем работу, если пользователя не существует
         Item item = itemMapper.map(updatedItem, Item.class);
-        itemStorage.updateItem(userId, itemId, item);
+        item.setOwnerId(userId);
+        item.setId(itemId);
+        itemStorage.updateItem(item);
         return getItem(itemId);
     }
 
@@ -64,15 +68,16 @@ public class ItemServiceImpl implements ItemSerVice {
     @Override
     public List<ItemDto> searchItems(String text) {
         List<Item> foundItems = new ArrayList<>();
-        if (!text.isBlank()) {
-            List<Item> items = itemStorage.getItems(null);
-            for (Item item : items) {
-                if ((item.getDescription().toLowerCase().contains(text.toLowerCase())
-                        || item.getName().toLowerCase().contains(text.toLowerCase()))
-                        && item.getAvailable()) {
+        if (text == null || text.isBlank()) {
+            return Collections.emptyList();
+        }
+        List<Item> items = itemStorage.getItems(null);
+        for (Item item : items) {
+            if ((item.getDescription().toLowerCase().contains(text.toLowerCase())
+                    || item.getName().toLowerCase().contains(text.toLowerCase()))
+                    && item.getAvailable()) {
 
-                    foundItems.add(item);
-                }
+                foundItems.add(item);
             }
         }
         return foundItems.stream()
