@@ -116,7 +116,7 @@ public class ItemServiceImpl implements ItemSerVice {
                     "и не может оставлять комментарий", userId, itemId));
         }
 
-        Comment createdcomment = CommentMapper.CommentRequestDtoToComment(comment);
+        Comment createdcomment = CommentMapper.сommentRequestDtoToComment(comment);
         createdcomment.setAuthor(user);
         createdcomment.setItem(item);
         return CommentMapper.commentToCommentResponse(commentRepository.save(createdcomment));
