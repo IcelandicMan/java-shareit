@@ -2,9 +2,9 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.comment.dto.CommentRequestDto;
-import ru.practicum.shareit.comment.dto.CommentResponseDto;
-import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.item.dto.CommentRequestDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
+import ru.practicum.shareit.item.model.Comment;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ public class CommentMapper {
         return commentResponseDto;
     }
 
-    public static Comment CommentRequestDtoToComment(CommentRequestDto comment) {
+    public static Comment сommentRequestDtoToComment(CommentRequestDto comment) {
         Comment createdComment = new Comment();
         createdComment.setText(comment.getText());
         createdComment.setCreated(LocalDateTime.now());

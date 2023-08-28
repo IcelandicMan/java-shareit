@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class BookingResponseDto {
 
-    private Long Id;
+    private Long id;
 
     private LocalDateTime start;
 
