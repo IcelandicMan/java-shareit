@@ -132,11 +132,17 @@ public class ItemServiceImpl implements ItemSerVice {
     }
 
     private User getUserIfExist(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Идентификатор пользователя не может быть null");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
             throw new ItemNotFoundException(String.format("Пользователь c id %s не найден", userId));
         }
-        return user.get();
+
+        return userOptional.get();
     }
 
     private void isUserOwner(Long userId, Item item) {

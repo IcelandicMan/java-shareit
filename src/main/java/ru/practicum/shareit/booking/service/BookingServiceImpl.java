@@ -146,11 +146,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User getUserIfExist(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", userId));
+        if (userId == null) {
+            throw new IllegalArgumentException("Идентификатор пользователя не может быть null");
         }
-        return user.get();
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new ItemNotFoundException(String.format("Пользователь c id %s не найден", userId));
+        }
+
+        return userOptional.get();
     }
 
     private Booking getBookingIfExist(Long bookingId) {
