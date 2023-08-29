@@ -152,7 +152,6 @@ public class ItemServiceImpl implements ItemSerVice {
         }
     }
 
-
     private ItemResponseDto createItemResponseDto(Long userId, Item item) {
         ItemResponseDto itemResponseDto = new ItemResponseDto();
         itemResponseDto.setId(item.getId());
@@ -200,7 +199,6 @@ public class ItemServiceImpl implements ItemSerVice {
                 itemResponseDto.setNextBooking(nextBookingDto);
             }
         }
-
         return itemResponseDto;
     }
 }

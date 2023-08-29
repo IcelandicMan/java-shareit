@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.errors.BookingNotFoundException;
+import ru.practicum.shareit.booking.errors.StateNotAvailableException;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -32,11 +34,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto createBooking(Long bookerId, BookingRequestDto booking) {
-        Booking createdBooking = createBookingFromDto(bookerId, booking);
-        if (createdBooking.getItem().getAvailable() == false) {
+        User booker = getUserIfExist(bookerId);
+        Item item = getItemIfExist(booking.getItemId());
+        if (bookerId.equals(item.getOwner().getId())) {
+            throw new UserNotFoundException(String.format("Пользователь с id %s является владельцем данной вещи " +
+                    "с id %s и не может её бронировать", bookerId, item.getOwner().getId()));
+        }
+        Booking createdBooking = BookingMapper.bookingookingRequestDtotoBooking(booking, booker, item);
+        if (!createdBooking.getItem().getAvailable()) {
             throw new ItemNotAvailableException("Бронирование вещи не возможно, так как её статус 'Недоступен'");
         }
-        return createBookingResponseDto(bookingRepository.save(createdBooking));
+        return BookingMapper.bookingToBookingResponseDto(bookingRepository.save(createdBooking));
     }
 
     @Override
@@ -51,14 +59,14 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(BookingStatus.REJECTED);
         }
-        return createBookingResponseDto(bookingRepository.save(booking));
+        return BookingMapper.bookingToBookingResponseDto(bookingRepository.save(booking));
     }
 
     @Override
     public BookingResponseDto getBooking(Long userId, Long bookingId) {
         Booking booking = getBookingIfExist(bookingId);
         isUserBookerOrItemOwner(userId, booking);
-        return createBookingResponseDto(booking);
+        return BookingMapper.bookingToBookingResponseDto(booking);
     }
 
     @Override
@@ -67,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             state = BookingState.valueOf(stateString);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: UNSUPPORTED_STATUS");
+            throw new StateNotAvailableException("Unknown state: UNSUPPORTED_STATUS");
         }
 
         User user = getUserIfExist(userId);
@@ -94,7 +102,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookingList.stream()
-                .map(this::createBookingResponseDto)
+                .map(BookingMapper::bookingToBookingResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -133,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
         }
         return bookingList.stream()
-                .map(this::createBookingResponseDto)
+                .map(BookingMapper::bookingToBookingResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -182,41 +190,5 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingNotFoundException(String.format("Пользователь с id %s не имеет прав просматривать " +
                     "бронирование с id %s", userId, booking.getId()));
         }
-    }
-
-    private BookingResponseDto createBookingResponseDto(Booking booking) {
-        BookingResponseDto responseDto = new BookingResponseDto();
-        responseDto.setId(booking.getId());
-        responseDto.setStart(booking.getStart());
-        responseDto.setEnd(booking.getEnd());
-        responseDto.setStatus(booking.getStatus());
-
-        User booker = new User();
-        booker.setId(booking.getBooker().getId());
-        responseDto.setBooker(booker);
-
-        Item item = new Item();
-        item.setId(booking.getItem().getId());
-        item.setName(booking.getItem().getName());
-        responseDto.setItem(item);
-
-        return responseDto;
-    }
-
-    private Booking createBookingFromDto(Long bookerId, BookingRequestDto booking) {
-        User booker = getUserIfExist(bookerId);
-        Item item = getItemIfExist(booking.getItemId());
-        if (bookerId.equals(item.getOwner().getId())) {
-            throw new UserNotFoundException(String.format("Пользователь с id %s является владельцем данной вещи " +
-                    "с id %s и не может её бронировать", bookerId, item.getOwner().getId()));
-        }
-
-        Booking createdBooking = new Booking();
-        createdBooking.setStart(booking.getStart());
-        createdBooking.setEnd(booking.getEnd());
-        createdBooking.setBooker(booker);
-        createdBooking.setItem(item);
-        createdBooking.setStatus(BookingStatus.WAITING);
-        return createdBooking;
     }
 }

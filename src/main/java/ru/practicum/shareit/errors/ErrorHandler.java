@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.errors.BookingNotFoundException;
+import ru.practicum.shareit.booking.errors.StateNotAvailableException;
 import ru.practicum.shareit.item.exeption.ItemNotAvailableException;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
@@ -45,6 +46,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleItemNotAvailableExceptionException(final ItemNotAvailableException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleStateNotAvailableException(final StateNotAvailableException e) {
         return new ErrorResponse(e.getMessage());
     }
 
