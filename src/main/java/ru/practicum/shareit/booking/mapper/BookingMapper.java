@@ -30,6 +30,7 @@ public class BookingMapper {
 
         return responseDto;
     }
+
     public static Booking bookingookingRequestDtotoBooking(BookingRequestDto booking, User booker, Item item) {
         Booking createdBooking = new Booking();
         createdBooking.setStart(booking.getStart());
