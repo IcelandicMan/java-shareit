@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
@@ -20,6 +21,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.itemRequest.model.ItemRequest;
 import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -62,6 +64,9 @@ class ItemServiceImplTest {
     private ItemRequestDto itemRequestDto2;
     private CommentRequestDto commentRequestDto;
     private Booking booking;
+    private Booking booking2;
+    private Comment comment;
+    private ItemRequest itemRequest;
 
     @BeforeEach
     void beforeEach() {
@@ -116,6 +121,19 @@ class ItemServiceImplTest {
         booking.setItem(item2);
         booking.setStart(LocalDateTime.now().minusDays(14));
         booking.setEnd(LocalDateTime.now().minusDays(10));
+
+        booking2 = new Booking();
+        booking2.setItem(item1);
+        booking2.setStatus(BookingStatus.APPROVED);
+        booking2.setBooker(user2);
+        booking2.setStart(LocalDateTime.now().plusDays(15));
+        booking2.setEnd(LocalDateTime.now().plusDays(30));
+
+        comment = new Comment();
+        comment.setText("Хорошо");
+        comment.setId(1L);
+        comment.setItem(item1);
+        comment.setAuthor(user2);
     }
 
     @Test
@@ -161,6 +179,24 @@ class ItemServiceImplTest {
         assertEquals(item.getName(), item1.getName());
         assertEquals(item.getDescription(), item1.getDescription());
         assertTrue(item.getAvailable());
+    }
+
+    @Test
+    void getItemIfUserOwnerTest(){
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
+        when(bookingRepository.findNearestBookingBeforeCurrentTimeForItemId(anyLong())).thenReturn(List.of(booking));
+        when(bookingRepository.findNextBookingAfterCurrentTimeForItemId(anyLong())).thenReturn(List.of(booking2));
+        when(commentRepository.findCommentsByItemId(anyLong())).thenReturn(List.of(comment));
+
+        ItemResponseDto item = itemService.getItem(user1.getId(), item1.getId());
+
+        assertEquals(item.getId(), 1);
+        assertEquals(item.getName(), item1.getName());
+        assertEquals(item.getDescription(), item1.getDescription());
+        assertTrue(item.getAvailable());
+        assertEquals(item.getNextBooking().getId(), booking2.getId());
+        assertEquals(item.getLastBooking().getId(), booking.getId());
+        assertEquals(item.getComments().get(0).getText(), comment.getText());
     }
 
     @Test
@@ -272,4 +308,6 @@ class ItemServiceImplTest {
         assertEquals(commentResponseDto.getAuthorName(), user1.getName());
         assertEquals(commentResponseDto.getText(), commentRequestDto.getText());
     }
+
+
 }

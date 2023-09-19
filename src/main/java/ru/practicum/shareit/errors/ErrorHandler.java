@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.itemRequest.controller.ItemRequestController;
 import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
-import ru.practicum.shareit.user.exception.EmailIsUsedException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.List;
@@ -56,11 +55,6 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailIsUsedException(final EmailIsUsedException e) {
-        return new ErrorResponse(e.getMessage());
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
 import ru.practicum.shareit.itemRequest.dto.ItemRequestResponsedDto;
+import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
 import ru.practicum.shareit.itemRequest.model.ItemRequest;
 import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -115,6 +116,14 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void getRequestNotExisted() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ItemRequestNotFoundException.class, () -> itemRequestService.getItemRequest(user1.getId(), itemRequest.getId()));
+    }
+
+    @Test
     void getRequestsByOwner() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
         when(itemRequestRepository.findAllByUserIdOrderByCreatedDesc(anyLong(), any(Pageable.class))).thenReturn(List.of(itemRequest));
@@ -137,6 +146,5 @@ class ItemRequestServiceImplTest {
         assertEquals(responses.get(0).getId(), itemRequest.getId());
         assertEquals(responses.get(0).getDescription(), itemRequest.getDescription());
     }
-
-
 }
+

@@ -124,4 +124,22 @@ class ItemRequestControllerTest {
 
         verify(itemRequestService, times(1)).getAllItemRequestByOwner(1L, 0, 5);
     }
+
+    @Test
+    void getAllItemTest() throws Exception {
+        when(itemRequestService.getAllItemRequest(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemRequestResponsedDto));
+
+        mvc.perform(get("/requests/all" )
+                        .param("from", "0")
+                        .param("size", "5")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", is(itemRequestResponsedDto.getId()), Long.class))
+                .andExpect(jsonPath("$.[0].description", is(itemRequestResponsedDto.getDescription()), String.class));
+
+        verify(itemRequestService, times(1)).getAllItemRequest(1L, 0, 5);
+    }
 }
