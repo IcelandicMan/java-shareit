@@ -129,7 +129,7 @@ class ItemRequestControllerTest {
     void getAllItemTest() throws Exception {
         when(itemRequestService.getAllItemRequest(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemRequestResponsedDto));
 
-        mvc.perform(get("/requests/all" )
+        mvc.perform(get("/requests/all")
                         .param("from", "0")
                         .param("size", "5")
                         .characterEncoding(StandardCharsets.UTF_8)

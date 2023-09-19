@@ -182,7 +182,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemIfUserOwnerTest(){
+    void getItemIfUserOwnerTest() {
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
         when(bookingRepository.findNearestBookingBeforeCurrentTimeForItemId(anyLong())).thenReturn(List.of(booking));
         when(bookingRepository.findNextBookingAfterCurrentTimeForItemId(anyLong())).thenReturn(List.of(booking2));
