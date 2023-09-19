@@ -309,5 +309,24 @@ class ItemServiceImplTest {
         assertEquals(commentResponseDto.getText(), commentRequestDto.getText());
     }
 
+    @Test
+    void deleteItemNoUserExist() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
+        assertThrows(UserNotFoundException.class, () -> itemService.deleteItem(user1.getId(), item2.getId()));
+    }
+
+    @Test
+    void deleteItemNoItemExist() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThrows(ItemNotFoundException.class, () -> itemService.deleteItem(user1.getId(), item2.getId()));
+    }
+
+    @Test
+    void deleteItemUserNotOwner() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
+        assertThrows(ItemNotFoundException.class, () -> itemService.deleteItem(user2.getId(), item1.getId()));
+    }
 }

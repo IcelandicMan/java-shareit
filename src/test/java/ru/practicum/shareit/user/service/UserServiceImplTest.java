@@ -122,6 +122,13 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUserIfNotExistTest() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(user.getId(), userRequestDto));
+    }
+
+    @Test
     void deleteUserTest() {
         userService.deleteUser(1L);
         verify(userRepository, times(1)).deleteById(1L);
