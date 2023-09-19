@@ -15,7 +15,7 @@ class UserResponseDtoTest {
     private JacksonTester<UserResponseDto> json;
 
     @Test
-    public void UserResponseDtoTest() throws Exception {
+    public void userResponseDtoTest() throws Exception {
         UserResponseDto userDto = new UserResponseDto();
         userDto.setId(1L);
         userDto.setName("Test");

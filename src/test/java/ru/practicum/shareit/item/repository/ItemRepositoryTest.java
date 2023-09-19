@@ -45,7 +45,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void SearchingItemAndFindByOwnerTest() {
+    public void searchingItemAndFindByOwnerTest() {
 
         item = new Item();
         item.setName("Укулеле");
