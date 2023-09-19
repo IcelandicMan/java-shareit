@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -15,6 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CommentRepositoryTest {
 
     @Autowired
@@ -71,7 +73,7 @@ class CommentRepositoryTest {
 
         List<Comment> comments = commentRepository.findCommentsByItemId(1L);
         assertEquals(1, comments.size());
-        assertEquals(comment, comments.get(0).getText());
+        assertEquals(comment.getText(), comments.get(0).getText());
 
         Comment comment2 = new Comment();
         comment2.setItem(item);

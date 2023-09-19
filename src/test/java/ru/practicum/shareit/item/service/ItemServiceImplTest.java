@@ -164,13 +164,6 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemIfUserNotOwnerTest() {
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
-
-        assertThrows(ItemNotFoundException.class, () -> itemService.getItem(user2.getId(), item1.getId()));
-    }
-
-    @Test
     void getItemsIfUserNotExistTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 

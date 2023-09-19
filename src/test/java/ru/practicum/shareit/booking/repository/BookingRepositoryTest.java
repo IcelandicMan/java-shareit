@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
@@ -12,12 +13,14 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class BookingRepositoryTest {
 
     @Autowired
@@ -59,14 +62,14 @@ class BookingRepositoryTest {
 
         booking = new Booking();
         booking.setStart(LocalDateTime.now().minusDays(4));
-        booking.setEnd(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().plusDays(2));
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(BookingStatus.APPROVED);
 
         booking2 = new Booking();
-        booking2.setStart(LocalDateTime.now().plusDays(1));
-        booking2.setEnd(LocalDateTime.now().plusDays(2));
+        booking2.setStart(LocalDateTime.now().plusDays(5));
+        booking2.setEnd(LocalDateTime.now().plusDays(10));
         booking2.setItem(item);
         booking2.setBooker(user);
         booking2.setStatus(BookingStatus.APPROVED);
@@ -83,17 +86,23 @@ class BookingRepositoryTest {
         assertEquals(booking2, bookings.get(0));
     }
 
+
     @Test
-    void findNextBookingsForItems() {
-        List<Booking> bookings = bookingRepository.findNearestBookingBeforeCurrentTimeForItemId(1L);
-        assertEquals(1, bookings.size());
-        assertEquals(booking, bookings.get(0));
+    void testFindNearestBookingBeforeCurrentTimeForItemId() {
+        Long itemId = 1L;
+        List<Booking> nearestBookings = bookingRepository.findNearestBookingBeforeCurrentTimeForItemId(itemId);
+
+        assertEquals(1, nearestBookings.size());
+
+        assertEquals(nearestBookings.get(0), booking);
     }
 
     @Test
     void findLastBookingsForItems() {
-        List<Booking> bookings = bookingRepository.findNextBookingAfterCurrentTimeForItemId(1L);
+        Long itemId = 1L;
+        List<Booking> bookings = bookingRepository.findNextBookingAfterCurrentTimeForItemId(itemId);
         assertEquals(1, bookings.size());
         assertEquals(booking2, bookings.get(0));
     }
+
 }
