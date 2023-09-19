@@ -108,7 +108,7 @@ class BookingServiceImplIntegrationTest {
         List<Booking> allIBookings = em.createQuery("SELECT b FROM Booking b", Booking.class)
                 .getResultList();
 
-        assertEquals(2, allIBookings .size());
+        assertEquals(2, allIBookings.size());
     }
 }
 
