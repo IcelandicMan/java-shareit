@@ -14,13 +14,13 @@ public interface ItemSerVice {
 
     ItemResponseDto getItem(Long userId, Long itemId);
 
-    List<ItemResponseDto> getItems(Long userId);
+    List<ItemResponseDto> getItems(Long userId, Integer from, Integer size);
 
     ItemResponseDto updateItem(Long userId, Long itemId, ItemRequestDto updatedItem);
 
     void deleteItem(Long userId, Long itemId);
 
-    List<ItemResponseDto> searchItems(Long userId, String text);
+    List<ItemResponseDto> searchItems(Long userId, String text, Integer from, Integer size);
 
     CommentResponseDto createComment(Long userId, Long itemId, CommentRequestDto comment);
 }

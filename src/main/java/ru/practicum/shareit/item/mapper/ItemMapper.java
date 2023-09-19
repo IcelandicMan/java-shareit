@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
+import ru.practicum.shareit.item.dto.ItemForItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Comment;
@@ -34,6 +35,9 @@ public class ItemMapper {
         itemResponseDto.setName(item.getName());
         itemResponseDto.setDescription(item.getDescription());
         itemResponseDto.setAvailable(item.getAvailable());
+        if (item.getItemRequest() != null) {
+            itemResponseDto.setRequestId(item.getItemRequest().getId());
+        }
 
         List<CommentResponseDto> commentResponseDtoList = commentList.stream()
                 .map(CommentMapper::commentToCommentResponse)
@@ -74,6 +78,16 @@ public class ItemMapper {
             }
         }
         return itemResponseDto;
+    }
+
+    public static ItemForItemRequestDto itemToItemForItemRequestDto(Item item) {
+        ItemForItemRequestDto itemForItemRequestDto = new ItemForItemRequestDto();
+        itemForItemRequestDto.setId(item.getId());
+        itemForItemRequestDto.setName(item.getName());
+        itemForItemRequestDto.setDescription(item.getDescription());
+        itemForItemRequestDto.setAvailable(item.getAvailable());
+        itemForItemRequestDto.setRequestId(item.getItemRequest().getId());
+        return itemForItemRequestDto;
     }
 }
 

@@ -2,19 +2,22 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-
 
 @Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "/bookings")
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -51,21 +54,31 @@ public class BookingController {
 
     @GetMapping()
     public List<BookingResponseDto> getBookingsByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                        @RequestParam(defaultValue = "ALL") String state) {
-        log.info("Запрошены все бронирования пользователя с id {} с параметром state {}", userId, state);
-        List<BookingResponseDto> bookings = bookingService.getAllBookingsByBooker(userId, state);
-        log.info("Запрос на предоставление бронирований пользователя с id {} с параметром {} выполнен ", userId, state);
+                                                        @RequestParam(defaultValue = "ALL") String state,
+                                                        @PositiveOrZero(message = "ошибка в параметре 'from")
+                                                        @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                        @Positive(message = "ошибка в параметре 'size")
+                                                        @RequestParam(name = "size", defaultValue = "20") Integer size) {
+        log.info("Запрошены все бронирования пользователя с id {} с параметром state {}, from {}, size {}",
+                userId, state, from, size);
+        List<BookingResponseDto> bookings = bookingService.getAllBookingsByBooker(userId, state, from, size);
+        log.info("Запрос на предоставление бронирований пользователя с id {} с параметром {} from {}, size {} -  выполнен ",
+                userId, state, from, size);
         return bookings;
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingsByItemOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                           @RequestParam(defaultValue = "ALL") String state) {
-        log.info("Запрошены все бронирования владельца вещей с id {} с параметром state {}", userId, state);
-        List<BookingResponseDto> bookings = bookingService.getAllBookingsByOwner(userId, state);
-        log.info("Запрос на предоставление бронирований  владельца вещей с id {} с параметром {} выполнен ", userId, state);
+                                                           @RequestParam(defaultValue = "ALL") String state,
+                                                           @PositiveOrZero(message = "ошибка в параметре 'from")
+                                                           @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                           @Positive(message = "ошибка в параметре 'size")
+                                                           @RequestParam(name = "size", defaultValue = "20") Integer size) {
+        log.info("Запрошены все бронирования владельца вещей с id {} с параметром state {}, from {}, size {}",
+                userId, state, from, size);
+        List<BookingResponseDto> bookings = bookingService.getAllBookingsByOwner(userId, state, from, size);
+        log.info("Запрос на предоставление бронирований  владельца вещей с id {} с параметром {}, from {}, size {} выполнен ",
+                userId, state, from, size);
         return bookings;
     }
-
-
 }

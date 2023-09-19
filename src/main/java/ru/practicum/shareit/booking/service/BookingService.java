@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 
-
 import java.util.List;
 
 public interface BookingService {
@@ -13,7 +12,7 @@ public interface BookingService {
 
     BookingResponseDto approveOrRejectBooking(Long userId, Long bookingId, Boolean approved);
 
-    List<BookingResponseDto> getAllBookingsByBooker(Long userId, String state);
+    List<BookingResponseDto> getAllBookingsByBooker(Long userId, String state, Integer from, Integer size);
 
-    List<BookingResponseDto> getAllBookingsByOwner(Long userId, String state);
+    List<BookingResponseDto> getAllBookingsByOwner(Long userId, String state, Integer from, Integer size);
 }

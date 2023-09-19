@@ -1,16 +1,18 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.errors.BookingNotFoundException;
 import ru.practicum.shareit.booking.errors.StateNotAvailableException;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
-import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.exeption.ItemNotAvailableException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
@@ -70,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllBookingsByBooker(Long userId, String stateString) {
+    public List<BookingResponseDto> getAllBookingsByBooker(Long userId, String stateString, Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(stateString);
@@ -79,65 +82,70 @@ public class BookingServiceImpl implements BookingService {
         }
 
         User user = getUserIfExist(userId);
+        Pageable pageable = PageRequest.of(from / size, size);
+
         List<Booking> bookingList = new ArrayList<>();
+
         switch (state) {
             case ALL:
-                bookingList = bookingRepository.findByBookerId(userId);
+                bookingList = bookingRepository.findByBookerId(userId, pageable);
                 break;
             case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingsByBookerId(userId);
+                bookingList = bookingRepository.findCurrentBookingsByBookerId(userId, pageable);
                 break;
             case PAST:
-                bookingList = bookingRepository.findPastBookingsByBookerId(userId);
+                bookingList = bookingRepository.findPastBookingsByBookerId(userId, pageable);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findFutureBookingsByBookerId(userId);
+                bookingList = bookingRepository.findFutureBookingsByBookerId(userId, pageable);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findWaitingBookingsByBookerId(userId);
+                bookingList = bookingRepository.findWaitingBookingsByBookerId(userId, pageable);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingsByBookerId(userId);
+                bookingList = bookingRepository.findRejectedBookingsByBookerId(userId, pageable);
                 break;
         }
-
         return bookingList.stream()
                 .map(BookingMapper::bookingToBookingResponseDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingResponseDto> getAllBookingsByOwner(Long userId, String stateString) {
+    public List<BookingResponseDto> getAllBookingsByOwner(Long userId, String stateString, Integer from, Integer size) {
         BookingState state;
         try {
             state = BookingState.valueOf(stateString);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown state: UNSUPPORTED_STATUS");
         }
-
+        Pageable pageForOwner = PageRequest.of(0, 1);
+        Pageable pageable = PageRequest.of(from / size, size);
         User user = getUserIfExist(userId);
-        if (itemRepository.findAllByOwnerId(userId).isEmpty()) {
+        if (itemRepository.findAllByOwnerId(userId, pageForOwner).isEmpty()) {
             throw new ItemNotFoundException(String.format("У пользователя c id %s не найдено ни одной вещи", userId));
         }
+
         List<Booking> bookingList = new ArrayList<>();
+
         switch (state) {
             case ALL:
-                bookingList = bookingRepository.findByOwner(userId);
+                bookingList = bookingRepository.findByOwner(userId, pageable);
                 break;
             case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingsByOwner(userId);
+                bookingList = bookingRepository.findCurrentBookingsByOwner(userId, pageable);
                 break;
             case PAST:
-                bookingList = bookingRepository.findPastBookingsByOwner(userId);
+                bookingList = bookingRepository.findPastBookingsByOwner(userId, pageable);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findFutureBookingsByOwner(userId);
+                bookingList = bookingRepository.findFutureBookingsByOwner(userId, pageable);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findWaitingBookingsByOwner(userId);
+                bookingList = bookingRepository.findWaitingBookingsByOwner(userId, pageable);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingsByOwner(userId);
+                bookingList = bookingRepository.findRejectedBookingsByOwner(userId, pageable);
                 break;
         }
         return bookingList.stream()
@@ -161,7 +169,7 @@ public class BookingServiceImpl implements BookingService {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty()) {
-            throw new ItemNotFoundException(String.format("Пользователь c id %s не найден", userId));
+            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", userId));
         }
 
         return userOptional.get();

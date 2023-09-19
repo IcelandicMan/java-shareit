@@ -7,22 +7,23 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.errors.BookingNotFoundException;
 import ru.practicum.shareit.booking.errors.StateNotAvailableException;
-import ru.practicum.shareit.item.exeption.ItemNotAvailableException;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.item.exeption.ItemNotAvailableException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
+import ru.practicum.shareit.itemRequest.controller.ItemRequestController;
+import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.exception.EmailIsUsedException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
-
 import java.util.List;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, ItemController.class, BookingController.class,
+        ItemRequestController.class})
 
 public class ErrorHandler {
     @ExceptionHandler
@@ -58,6 +59,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailIsUsedException(final EmailIsUsedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 
