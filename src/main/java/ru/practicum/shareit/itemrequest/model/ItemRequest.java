@@ -32,6 +32,6 @@ public class ItemRequest {
     @Column(name = "created")
     private LocalDateTime created;
 
-    @OneToMany(mappedBy = "itemrequest", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "itemRequest", cascade = CascadeType.ALL)
     private List<Item> items = new ArrayList<>();
 }
