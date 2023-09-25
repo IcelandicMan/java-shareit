@@ -1,4 +1,4 @@
-package ru.practicum.shareit.itemRequest.service;
+package ru.practicum.shareit.itemrequest.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +10,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestResponsedDto;
-import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
-import ru.practicum.shareit.itemRequest.model.ItemRequest;
-import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestRequestedDto;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestResponsedDto;
+import ru.practicum.shareit.itemrequest.exeption.ItemRequestNotFoundException;
+import ru.practicum.shareit.itemrequest.model.ItemRequest;
+import ru.practicum.shareit.itemrequest.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;

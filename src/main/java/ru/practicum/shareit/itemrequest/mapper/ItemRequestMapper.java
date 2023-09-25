@@ -1,13 +1,13 @@
-package ru.practicum.shareit.itemRequest.mapper;
+package ru.practicum.shareit.itemrequest.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemForItemRequestDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestResponsedDto;
-import ru.practicum.shareit.itemRequest.model.ItemRequest;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestRequestedDto;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestResponsedDto;
+import ru.practicum.shareit.itemrequest.model.ItemRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;

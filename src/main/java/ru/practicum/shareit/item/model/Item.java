@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import ru.practicum.shareit.itemRequest.model.ItemRequest;
+import ru.practicum.shareit.itemrequest.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;

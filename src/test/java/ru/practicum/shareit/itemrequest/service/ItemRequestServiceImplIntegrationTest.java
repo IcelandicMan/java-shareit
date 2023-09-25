@@ -1,4 +1,4 @@
-package ru.practicum.shareit.itemRequest.service;
+package ru.practicum.shareit.itemrequest.service;
 
 
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,8 @@ import ru.practicum.shareit.ShareItApp;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemSerVice;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
-import ru.practicum.shareit.itemRequest.model.ItemRequest;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestRequestedDto;
+import ru.practicum.shareit.itemrequest.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.service.UserService;

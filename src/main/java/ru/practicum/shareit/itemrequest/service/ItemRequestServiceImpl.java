@@ -1,15 +1,15 @@
-package ru.practicum.shareit.itemRequest.service;
+package ru.practicum.shareit.itemrequest.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestResponsedDto;
-import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
-import ru.practicum.shareit.itemRequest.mapper.ItemRequestMapper;
-import ru.practicum.shareit.itemRequest.model.ItemRequest;
-import ru.practicum.shareit.itemRequest.repository.ItemRequestRepository;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestRequestedDto;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestResponsedDto;
+import ru.practicum.shareit.itemrequest.exeption.ItemRequestNotFoundException;
+import ru.practicum.shareit.itemrequest.mapper.ItemRequestMapper;
+import ru.practicum.shareit.itemrequest.model.ItemRequest;
+import ru.practicum.shareit.itemrequest.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -69,12 +69,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (userId == null) {
             throw new IllegalArgumentException("Идентификатор пользователя не может быть null");
         }
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", userId));
-        }
-        return userOptional.get();
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь c id %s не найден", userId)));
     }
 
     private ItemRequest getItemRequestIfExist(Long itemRequestId) {

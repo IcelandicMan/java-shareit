@@ -1,12 +1,12 @@
-package ru.practicum.shareit.itemRequest.controller;
+package ru.practicum.shareit.itemrequest.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestRequestedDto;
-import ru.practicum.shareit.itemRequest.dto.ItemRequestResponsedDto;
-import ru.practicum.shareit.itemRequest.service.ItemRequestService;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestRequestedDto;
+import ru.practicum.shareit.itemrequest.dto.ItemRequestResponsedDto;
+import ru.practicum.shareit.itemrequest.service.ItemRequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.itemRequest.model;
+package ru.practicum.shareit.itemrequest.model;
 
 import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
@@ -32,6 +32,6 @@ public class ItemRequest {
     @Column(name = "created")
     private LocalDateTime created;
 
-    @OneToMany(mappedBy = "itemRequest", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "itemrequest", cascade = CascadeType.ALL)
     private List<Item> items = new ArrayList<>();
 }

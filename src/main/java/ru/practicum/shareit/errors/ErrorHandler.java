@@ -13,8 +13,8 @@ import ru.practicum.shareit.booking.errors.StateNotAvailableException;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.exeption.ItemNotAvailableException;
 import ru.practicum.shareit.item.exeption.ItemNotFoundException;
-import ru.practicum.shareit.itemRequest.controller.ItemRequestController;
-import ru.practicum.shareit.itemRequest.exeption.ItemRequestNotFoundException;
+import ru.practicum.shareit.itemrequest.controller.ItemRequestController;
+import ru.practicum.shareit.itemrequest.exeption.ItemRequestNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
