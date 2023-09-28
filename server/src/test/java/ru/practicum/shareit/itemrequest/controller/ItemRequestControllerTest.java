@@ -73,6 +73,7 @@ class ItemRequestControllerTest {
 
         verify(itemRequestService, times(1)).createItemRequest(123L, itemRequestRequestedDto);
     }
+
     @Test
     void getItemRequestByIdTest() throws Exception {
         when(itemRequestService.getItemRequest(anyLong(), anyLong())).thenReturn(itemRequestResponsedDto);
