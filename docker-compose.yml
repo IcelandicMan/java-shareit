@@ -8,9 +8,6 @@ services:
       - "8080:8080"
     depends_on:
       - server
-    volumes:
-      - /etc/timezone:/etc/timezone:ro"
-      - /etc/localtime:/etc/localtime:ro"
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
 
@@ -23,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - DB_NAME=shareit
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=password
@@ -36,7 +33,7 @@ services:
     ports:
       - "6541:5432"
     environment:
-        - POSTGRES_DB=shareit
-        - POSTGRES_USER=root
-        - POSTGRES_PASSWORD=password
-        - TZ=Europe/Moscow
+      - POSTGRES_DB=shareit
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - TZ=Europe/Moscow
