@@ -8,6 +8,9 @@ services:
       - "8080:8080"
     depends_on:
       - server
+    volumes:
+      - /etc/timezone:/etc/timezone:rw
+      - /etc/localtime:/etc/localtime:rw
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
 
