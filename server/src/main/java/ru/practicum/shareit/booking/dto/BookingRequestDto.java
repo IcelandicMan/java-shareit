@@ -11,7 +11,6 @@ public class BookingRequestDto {
 
     private LocalDateTime start;
 
-
     private LocalDateTime end;
 
 }

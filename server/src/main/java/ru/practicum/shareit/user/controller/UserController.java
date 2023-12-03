@@ -48,7 +48,6 @@ public class UserController {
         log.info("Запрос выполнен, пользователь обновлен: {} ", updatedUser);
         return updatedUser;
     }
-
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         log.info("Запрошено удаление пользователя с id {} ", id);
